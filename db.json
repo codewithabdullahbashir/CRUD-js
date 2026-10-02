@@ -1,37 +1,5 @@
 {
-  "users": [
-    {
-      "name": "Abdullah",
-      "email": "abdu678@gmail.com",
-      "password": "1234567890",
-      "id": "iJt6fFctIIQ"
-    },
-    {
-      "name": "nnnn",
-      "email": "nnnn34@gmail.com",
-      "password": "123456789",
-      "id": "YaOy2TBet7g"
-    }
-  ],
-  "todos": [
-    {
-      "userId": "tHQF3Opflzs",
-      "text": "d",
-      "id": "aiOhZ7IFV9c"
-    },
-    {
-      "userId": "tHQF3Opflzs",
-      "text": "dd",
-      "id": "c1W5EKzrGJ8"
-    },
-    {
-      "text": " 1234567890-h",
-      "id": "iKjDhnwtJIo"
-    },
-    {
-      "text": "mkxmkashhhh",
-      "id": "z3f7Th1_EF8"
-    }
-  ],
+  "users": [],
+  "todos": [],
   "$schema": "./node_modules/json-server/schema.json"
 }
