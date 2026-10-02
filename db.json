@@ -1,5 +1,16 @@
 {
   "users": [],
-  "todos": [],
+  "todos": [
+    {
+      "userId": "tHQF3Opflzs",
+      "text": "d",
+      "id": "aiOhZ7IFV9c"
+    },
+    {
+      "userId": "tHQF3Opflzs",
+      "text": "dd",
+      "id": "c1W5EKzrGJ8"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

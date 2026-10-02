@@ -1,6 +1,5 @@
 
-const USERAPI = "http://localhost:3000/users";
-const TODOAPI = "http://localhost:3000/todos";
+const UserAPI = "http://localhost:3000/users";
 
 async function signup(event) {
   if (event) event.preventDefault();
@@ -15,7 +14,7 @@ async function signup(event) {
   }
 
   try {
-    const check = await fetch(`${USERAPI}?email=${encodeURIComponent(email)}`);
+    const check = await fetch(`${UserAPI}?email=${encodeURIComponent(email)}`);
     const existing = await check.json();
 
     if (existing.length > 0) {
@@ -23,7 +22,7 @@ async function signup(event) {
       return;
     }
 
-    const response = await fetch(USERAPI, {
+    const response = await fetch(UserAPI, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -48,7 +47,7 @@ async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const response = await fetch(USERAPI);
+  const response = await fetch(UserAPI);
   const users = await response.json();
 
   for (let user of users) {
@@ -70,9 +69,4 @@ async function login() {
 }
 
 
-function logout() {
 
-    localStorage.removeItem("user");
-
-    window.location.href = "index.html";
-}
