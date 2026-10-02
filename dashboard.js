@@ -5,10 +5,9 @@ const user = JSON.parse(localStorage.getItem("user"));
 
 const todoInput = document.getElementById("todoInput");
 const todoContainer = document.getElementById("todos");
-const empty = document.getElementById("empty");
+const empty = document.getElementById("empty-todos");
 
 document.getElementById("user-name").innerText = user.name;
-
 
 async function loadTodos() {
   const response = await fetch(TodoAPI);
@@ -68,9 +67,35 @@ async function addTodo() {
 
   loadTodos();
 }
+async function editTodo(id, oldText) {
+  const newText = prompt("Edit todo", oldText);
 
+  if (newText === null) {
+    return;
+  }
 
+  await fetch(`${TodoAPI}/${id}`, {
+    method: "PATCH",
 
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+    body: JSON.stringify({
+      text: newText,
+    }),
+  });
+
+  loadTodos();
+}
+
+async function deleteTodo(id) {
+  await fetch(`${TodoAPI}/${id}`, {
+    method: "DELETE",
+  });
+
+  loadTodos();
+}
 
 
 function logout() {

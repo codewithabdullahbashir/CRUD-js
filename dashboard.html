@@ -171,7 +171,7 @@
 
     <nav class="navbar">
         <h1>Dashboard</h1>
-        <button onclick="logout()">Logout</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
     </nav>
     <main class="container">
         <div class="welcome">
@@ -185,8 +185,11 @@
             <button class="add-btn" onclick="addTodo()">Add Todo</button>
         </div>
         <div id="todos" class="todos"></div>
+        <p id="empty-todos" class="empty" style="display: none;">
+            No todos found.
+        </p>
         
-        
+    
 
     </main>
 
