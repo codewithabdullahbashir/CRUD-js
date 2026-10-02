@@ -1,4 +1,71 @@
 {
-  "users": [],
+  "users": [
+    {
+      "name": "abd",
+      "email": "asdf567@gmail.com",
+      "password": "1234567890",
+      "id": "TMAi4FLcMkE"
+    },
+    {
+      "name": "abd",
+      "email": "asdf57@gmail.com",
+      "password": "1234567890",
+      "id": "dzvN-L6Vv38"
+    },
+    {
+      "name": "",
+      "email": "",
+      "password": "",
+      "id": "Ro4R_TDdGlI"
+    },
+    {
+      "name": "qwerty",
+      "email": "asdfgh21@gmail.com",
+      "password": "1234567890",
+      "id": "0InoFPpG4WQ"
+    },
+    {
+      "name": "asdfg",
+      "email": "asdfg@gmail.com",
+      "password": "1234567890",
+      "id": "NaM5E6gRsgM"
+    },
+    {
+      "name": "w2ees",
+      "email": "asdfghjk@gmail.com",
+      "password": "1234567890",
+      "id": "OWixO0dqXb0"
+    },
+    {
+      "name": "abd",
+      "email": "zxcvbn@gmail.com",
+      "password": "1234567890",
+      "id": "P1tHSekveIU"
+    },
+    {
+      "name": "asdf",
+      "email": "asdf67809@gmail.com",
+      "password": "1234567890",
+      "id": "LxpeCTF61n8"
+    },
+    {
+      "name": "abdullah",
+      "email": "khan32@gmail.com",
+      "password": "1234567890",
+      "id": "m1u-jhmwXVk"
+    },
+    {
+      "name": "asdfa",
+      "email": "asdf123456",
+      "password": "1234567890",
+      "id": "nRfG_frezDo"
+    },
+    {
+      "name": "21",
+      "email": "lahore32@gmail.com",
+      "password": "1234567890",
+      "id": "60ue0dH9ZB0"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

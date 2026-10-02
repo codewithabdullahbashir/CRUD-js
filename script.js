@@ -3,41 +3,45 @@ const API = "http://localhost:3000/users";
 
 
 async function signup(event) {
-    if(event)event.preventDefault();
+  if (event) event.preventDefault();
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
- 
-    const response = await fetch(API);
-    const users = await response.json();
+  if (!name || !email || !password) {
+    alert("Please fill all fields");
+    return;
+  }
 
+  try {
+    const check = await fetch(`${API}?email=${encodeURIComponent(email)}`);
+    const existing = await check.json();
 
-    for (let user of users) {
-
-        if (user.email === email) {
-            alert("Email already exists");
-            return;
-        }
+    if (existing.length > 0) {
+      alert("Email already exists");
+      return;
     }
 
-
-    await fetch(API, {
-        method: "POST",
-        headers: {
-            "content-type": "application/json"
-        },
-        body: JSON.stringify({
-            name: name,
-            email: email,
-            password: password
-        })
+    const response = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
     });
 
-    alert("Account created");
+    if (!response.ok) {
+      alert("Signup failed");
+      return;
+    }
+
+    const newUser = await response.json();
+    localStorage.setItem("user", JSON.stringify(newUser));
 
     window.location.href = "dashboard.html";
+  } catch (err) {
+    alert.error(err);
+    alert("Could not reach the server");
+  }
 }
 
 
