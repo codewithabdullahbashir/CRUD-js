@@ -10,6 +10,37 @@ const empty = document.getElementById("empty");
 document.getElementById("user-name").innerText = user.name;
 
 
+async function loadTodos() {
+  const response = await fetch(TodoAPI);
+  const todos = await response.json();
+
+  todoContainer.innerHTML = "";
+
+  if (todos.length === 0) {
+    empty.style.display = "block";
+    return;
+  }
+
+  for (let todo of todos) {
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+
+      <span>${todo.text}</span>
+
+      <button onclick="editTodo('${todo.id}', '${todo.text}')">
+        Update
+      </button>
+
+      <button onclick="deleteTodo('${todo.id}')">
+        Delete
+      </button>
+    `;
+
+    todoContainer.appendChild(div);
+  }
+}
+
 
 
 
