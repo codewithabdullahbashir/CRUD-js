@@ -11,6 +11,23 @@
         <h1>Dashboard</h1>
         <button onclick="logout()">Logout</button>
     </nav>
+    <main class="container">
+        <div class="welcome">
+            <h2>Welcome, <span id="user-name"></span>!</h2>
+            <p>Your email: <span id="user-email"></span></p>
+            <p>Manage your todos</p>
+    
+        </div>
+        <div class="add-todo">
+            <input type="text" id="todoInput" placeholder="Enter a todo...">
+            <button class="add-btn" onclick="addTodo()">Add Todo</button>
+        </div>
+        <div id="todos" class="todos"></div>
+    
+        <p id="empty" class="empty">
+            No todos yet.
+        </p>
+    </main>
 
 
     <script src="script.js"></script>
