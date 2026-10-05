@@ -1,4 +1,3 @@
-
 const TodoAPI = "http://localhost:3000/todos";
 
 const user = JSON.parse(localStorage.getItem("user"));
@@ -9,40 +8,56 @@ const empty = document.getElementById("empty-todos");
 
 document.getElementById("user-name").innerText = user.name;
 
-async function loadTodos() {
-  const response = await fetch(TodoAPI);
-  const todos = await response.json();
+function getTodos(callback) {
+  const request = new XMLHttpRequest();
 
-  const userTodo = todos.filter((todo) => todo.userId === user.id);
+  request.open("GET", TodoAPI);
 
-  todoContainer.innerHTML = "";
+  request.onload = function () {
+    const todos = JSON.parse(request.responseText);
 
-  if (userTodo.length === 0) {
-    empty.style.display = "block";
-    return;
-  }
+    callback(todos);
+  };
 
-  for (let todo of userTodo) {
-    const div = document.createElement("div");
-
-    div.innerHTML = `
-
-      <span>${todo.text}</span>
-
-      <button onclick="editTodo('${todo.id}', '${todo.text}')">
-        Update
-      </button>
-
-      <button onclick="deleteTodo('${todo.id}')">
-        Delete
-      </button>
-    `;
-
-    todoContainer.appendChild(div);
-  }
+  request.send();
 }
 
-async function addTodo() {
+function loadTodos() {
+  getTodos(function (todos) {
+    const userTodo = todos.filter(function (todo) {
+      return todo.userId === user.id;
+    });
+
+    todoContainer.innerHTML = "";
+
+    if (userTodo.length === 0) {
+      empty.style.display = "block";
+      return;
+    }
+
+    empty.style.display = "none";
+
+    for (let todo of userTodo) {
+      const div = document.createElement("div");
+
+      div.innerHTML = `
+        <span>${todo.text}</span>
+
+        <button onclick="editTodo('${todo.id}', '${todo.text}')">
+          Update
+        </button>
+
+        <button onclick="deleteTodo('${todo.id}')">
+          Delete
+        </button>
+      `;
+
+      todoContainer.appendChild(div);
+    }
+  });
+}
+
+function addTodo() {
   const text = todoInput.value.trim();
 
   if (text === "") {
@@ -50,53 +65,60 @@ async function addTodo() {
     return;
   }
 
-  await fetch(TodoAPI, {
-    method: "POST",
+  const request = new XMLHttpRequest();
 
-    headers: {
-      "Content-Type": "application/json",
-    },
+  request.open("POST", TodoAPI);
 
-    body: JSON.stringify({
+  request.setRequestHeader("Content-Type", "application/json");
+
+  request.onload = function () {
+    todoInput.value = "";
+
+    loadTodos();
+  };
+
+  request.send(
+    JSON.stringify({
       userId: user.id,
       text: text,
     }),
-  });
-
-  todoInput.value = "";
-
-  loadTodos();
+  );
 }
-async function editTodo(id, oldText) {
+
+function editTodo(id, oldText) {
   const newText = prompt("Edit todo", oldText);
 
   if (newText === null) {
     return;
   }
 
-  await fetch(`${TodoAPI}/${id}`, {
-    method: "PATCH",
+  const request = new XMLHttpRequest();
 
-    headers: {
-      "Content-Type": "application/json",
-    },
+  request.open("PATCH", `${TodoAPI}/${id}`);
 
-    body: JSON.stringify({
+  request.setRequestHeader("Content-Type", "application/json");
+
+  request.onload = function () {
+    loadTodos();
+  };
+
+  request.send(
+    JSON.stringify({
       text: newText,
     }),
-  });
-
-  loadTodos();
+  );
 }
+function deleteTodo(id) {
+  const request = new XMLHttpRequest();
 
-async function deleteTodo(id) {
-  await fetch(`${TodoAPI}/${id}`, {
-    method: "DELETE",
-  });
+  request.open("DELETE", `${TodoAPI}/${id}`);
 
-  loadTodos();
+  request.onload = function () {
+    loadTodos();
+  };
+
+  request.send();
 }
-
 
 function logout() {
   localStorage.removeItem("user");
@@ -105,4 +127,3 @@ function logout() {
 }
 
 loadTodos();
-
