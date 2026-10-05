@@ -1,227 +1,282 @@
-# 🔐 Login & Signup Web App
+# Todo Dashboard App
 
-A simple front-end authentication app built with **HTML, CSS, and vanilla JavaScript**. Users can create an account, log in, see a personalized dashboard, and log out. No frameworks, no build tools, no backend required.
+A simple full-stack-style Todo application built with **HTML, CSS, and vanilla JavaScript**, using **JSON Server** as a fake REST API backend. Users can sign up, log in, and manage their own personal todo list (add, edit, delete).
 
----
-
-## 📑 Table of Contents
-
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [App Flow](#-app-flow)
-- [How It Works](#-how-it-works)
-- [Pages Explained](#-pages-explained)
-- [Customization](#-customization)
-- [Security Notice](#-security-notice)
-- [Future Improvements](#-future-improvements)
-- [Contributing](#-contributing)
-- [License](#-license)
+> Built as a learning project to practice DOM manipulation, `fetch` API, CRUD operations, and `localStorage`-based sessions.
 
 ---
 
-## ✨ Features
+## Features
 
-- Clean, modern, responsive card-style UI
-- Sign up with full name, email, and password
-- Login with email and password
-- Personalized welcome message on the dashboard
-- Logout functionality
-- Works fully in the browser, with no server or database setup
-
----
-
-## 🛠 Tech Stack
-
-| Layer      | Technology                                   |
-|------------|----------------------------------------------|
-| Structure  | HTML5                                        |
-| Styling    | CSS3 (Flexbox, custom card design)           |
-| Logic      | Vanilla JavaScript (`script.js`)             |
-| Storage    | Browser Web Storage (`localStorage`)         |
+- User **Sign Up** with duplicate-email check
+- User **Login** with email and password validation
+- Session handling using `localStorage`
+- Personal **Dashboard** that greets the user by name
+- **Add**, **Update (edit)**, and **Delete** todos
+- Each user sees **only their own** todos
+- Empty state message when there are no todos
+- Responsive layout (mobile friendly)
+- **Logout** that clears the session
 
 ---
 
-## 📁 Project Structure
+## Tech Stack
+
+| Layer      | Technology                          |
+|------------|-------------------------------------|
+| Frontend   | HTML5, CSS3, Vanilla JavaScript (ES6) |
+| Backend    | [JSON Server](https://github.com/typicode/json-server) (mock REST API) |
+| Storage    | `db.json` (server data), `localStorage` (login session) |
+
+---
+
+## Project Structure
 
 ```
-project-folder/
-│
+todo-app/
 ├── index.html        # Login page (entry point)
-├── signup.html       # Registration page
-├── dashboard.html    # Protected page shown after login
-├── script.js         # All app logic: signup, login, logout, session check
-└── README.md         # Project documentation
+├── signup.html       # Sign Up page
+├── dashboard.html    # Todo dashboard (protected page)
+├── script.js         # Auth logic: signup() and login()
+├── dashboard.js      # Todo logic: load, add, edit, delete, logout
+├── db.json           # JSON Server database (users + todos)
+└── README.md
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-You only need a modern web browser (Chrome, Firefox, Edge, Safari). No installation is required.
+- [Node.js](https://nodejs.org/) (v18 or later recommended)
+- npm (comes with Node.js)
+- A modern web browser
+- Optional: VS Code with the **Live Server** extension
 
-### Option 1: Open directly (easiest)
-
-1. Download or clone the repository:
-   ```bash
-   git clone https://github.com/your-username/your-repo-name.git
-   ```
-2. Open the project folder.
-3. Double-click **`index.html`** to open it in your browser.
-
-### Option 2: Use VS Code Live Server
-
-1. Open the folder in **VS Code**.
-2. Install the **Live Server** extension.
-3. Right-click `index.html` and choose **Open with Live Server**.
-
-### Option 3: Use a local server
+### 1. Clone the repository
 
 ```bash
-# Python 3
-python -m http.server 8000
-
-# or Node.js
-npx serve
+git clone https://github.com/<your-username>/<your-repo-name>.git
+cd <your-repo-name>
 ```
 
-Then visit `http://localhost:8000` in your browser.
+### 2. Install JSON Server
 
----
-
-## 🔄 App Flow
-
-```mermaid
-flowchart TD
-    A([User opens index.html]) --> B{Has an account?}
-    B -- No --> C[Click 'Sign Up' link]
-    C --> D[signup.html: enter name, email, password]
-    D --> E[signup function validates input and saves user]
-    E --> F[Redirect to index.html]
-    B -- Yes --> G[Enter email and password]
-    F --> G
-    G --> H[login function checks credentials]
-    H -- Invalid --> I[Show error message]
-    I --> G
-    H -- Valid --> J[Save logged-in session]
-    J --> K[dashboard.html]
-    K --> L[Shows welcome message with user's name]
-    L --> M[Click Logout]
-    M --> N[logout function clears session]
-    N --> A
+```bash
+npm install json-server
 ```
 
-### Step-by-step user journey
+### 3. Start the backend (API server)
 
-1. **Open the app.** The login page (`index.html`) loads first.
-2. **New user?** Click **Sign Up** to go to `signup.html`.
-3. **Register.** Enter your full name, email, and password, then click **Sign Up**.
-4. **Log in.** Back on the login page, enter your email and password, then click **Login**.
-5. **Dashboard.** On success you land on `dashboard.html`, which greets you by name.
-6. **Logout.** Click **Logout** to end the session and return to the login page.
+```bash
+npx json-server db.json
+```
 
----
+The API now runs at **http://localhost:3000**
 
-## ⚙️ How It Works
+- Users endpoint: http://localhost:3000/users
+- Todos endpoint: http://localhost:3000/todos
 
-All pages share a single script, `script.js`, which each page loads at the bottom of the `<body>`. Buttons call functions from this file using inline `onclick` handlers.
+> If you are using the older JSON Server v0.x, use `npx json-server --watch db.json` instead.
 
-| Page             | Element / Trigger                  | Function called   | Purpose                                      |
-|------------------|------------------------------------|-------------------|----------------------------------------------|
-| `signup.html`    | **Sign Up** button                 | `signup(event)`   | Reads name, email, password and creates account |
-| `index.html`     | **Login** button                   | `login(event)`    | Verifies credentials and starts a session    |
-| `dashboard.html` | **Logout** button                  | `logout()`        | Ends the session and redirects to login      |
-| `dashboard.html` | `<h2 id="welcome">`                | (on page load)    | Displays the logged-in user's name           |
+### 4. Start the frontend
 
-### Data handling
+Keep the API terminal running, then open the app in one of these ways:
 
-- User data is stored in the browser's **`localStorage`**, so it persists after refreshing or closing the tab.
-- Each input field is read by its `id` (`name`, `email`, `password`).
-- The `event` parameter passed to `login(event)` and `signup(event)` lets the script call `event.preventDefault()` if needed.
-- The dashboard checks for a logged-in user on load. If no one is logged in, it should redirect back to `index.html`.
+- **Option A (easiest):** Double-click `index.html` to open it in your browser.
+- **Option B (recommended):** Right-click `index.html` in VS Code and choose **Open with Live Server**.
+- **Option C:** Run a simple static server in a second terminal:
+  ```bash
+  npx serve .
+  ```
 
-> **Note:** Update this section if your `script.js` uses a different storage method (for example `sessionStorage` or a backend API).
+### 5. Use the app
 
----
-
-## 📄 Pages Explained
-
-### `index.html` (Login)
-- Fields: **E-Mail** and **Password**
-- Button: **Login**, which runs `login(event)`
-- Link to `signup.html` for new users
-
-### `signup.html` (Sign Up)
-- Fields: **Full Name**, **E-Mail**, and **Password**
-- Button: **Sign Up**, which runs `signup(event)`
-- Link back to `index.html` for existing users
-
-### `dashboard.html` (Dashboard)
-- Shows a heading and a personalized welcome message in `<h2 id="welcome">`
-- **Logout** button, which runs `logout()`
-- Only intended for logged-in users
+1. Open the app, then click **Sign Up** and create an account.
+2. You are redirected to the dashboard automatically.
+3. Add, edit, and delete todos.
+4. Click **Logout** to end the session, then log back in anytime.
 
 ---
 
-## 🎨 Customization
+## How the App Works (Full Flow)
 
-- **Colors:** Change the primary color `#007bff` (buttons, links, input focus) in the `<style>` block of `index.html` and `signup.html`.
-- **Background:** Edit `background-color: #f4f7f6` on `body`.
-- **Card size:** Adjust `max-width: 400px` in the `.card` class.
-- **Font:** Update the `font-family` in the `*` selector.
-- **Dashboard styling:** `dashboard.html` is currently unstyled, so you can reuse the card CSS from the other pages.
+```
+        ┌──────────────┐
+        │  index.html  │  ← Login page
+        └──────┬───────┘
+               │
+   ┌───────────┴───────────┐
+   │ No account?           │ Has account
+   ▼                       ▼
+┌─────────────┐      login() in script.js
+│ signup.html │      checks email + password
+└──────┬──────┘             │
+       │ signup()           │ success
+       │ saves user         │
+       ▼                    ▼
+   localStorage("user") is set
+               │
+               ▼
+      ┌────────────────┐
+      │ dashboard.html │  ← reads user from localStorage
+      └───────┬────────┘
+              │  dashboard.js
+              ▼
+   Load / Add / Edit / Delete todos
+              │
+              ▼
+          Logout → clears localStorage → back to index.html
+```
+
+### Step-by-step
+
+#### 1. Sign Up (`signup.html` + `script.js`)
+
+1. The user enters **Full Name**, **Email**, and **Password**.
+2. `signup()` validates that no field is empty.
+3. It calls `GET /users?email=<email>` to check if the email already exists.
+4. If the email is new, it sends `POST /users` with `{ name, email, password }`.
+5. JSON Server saves the user in `db.json` and auto-generates an `id`.
+6. The new user object is stored in `localStorage` under the key `user`.
+7. The browser redirects to `dashboard.html`.
+
+#### 2. Login (`index.html` + `script.js`)
+
+1. The user enters **Email** and **Password**.
+2. `login()` fetches all users via `GET /users`.
+3. It loops through them to find a matching email:
+   - Email matches and password matches: user is saved to `localStorage`, redirect to dashboard.
+   - Email matches but password is wrong: shows **"Wrong password"**.
+   - No email match: shows **"User not found"**.
+
+#### 3. Dashboard (`dashboard.html` + `dashboard.js`)
+
+On page load, `dashboard.js`:
+
+1. Reads the logged-in user from `localStorage`.
+2. Shows the user's name in the welcome message.
+3. Calls `loadTodos()`:
+   - `GET /todos` fetches all todos.
+   - Filters them by `todo.userId === user.id`, so users only see their own.
+   - Renders each todo with **Update** and **Delete** buttons.
+   - Shows **"No todos found."** if the list is empty.
+
+#### 4. Todo CRUD operations
+
+| Action | Function      | HTTP Request              | Description                         |
+|--------|---------------|---------------------------|-------------------------------------|
+| Create | `addTodo()`   | `POST /todos`             | Saves `{ userId, text }`            |
+| Read   | `loadTodos()` | `GET /todos`              | Fetches and filters by current user |
+| Update | `editTodo()`  | `PATCH /todos/:id`        | Updates the `text` via `prompt()`   |
+| Delete | `deleteTodo()`| `DELETE /todos/:id`       | Removes the todo                    |
+
+After every change, `loadTodos()` runs again to refresh the list.
+
+#### 5. Logout
+
+`logout()` removes `user` from `localStorage` and redirects to `index.html`.
 
 ---
 
-## 🔒 Security Notice
+## Data Model (`db.json`)
 
-This project is built for **learning and demonstration purposes**.
+```json
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Ali Khan",
+      "email": "ali@example.com",
+      "password": "123456"
+    }
+  ],
+  "todos": [
+    {
+      "id": "1",
+      "userId": "1",
+      "text": "Learn JavaScript"
+    }
+  ]
+}
+```
 
-- Data lives in `localStorage`, which is readable by anyone using the browser.
-- Passwords should **never** be stored in plain text in a real application.
-- There is no server-side validation, hashing, or token-based authentication.
-
-For production use, add a real backend (Node.js, Django, Firebase, etc.), hash passwords (e.g. bcrypt), use HTTPS, and issue secure session tokens (JWT or cookies).
+Every todo is linked to its owner through `userId`.
 
 ---
 
-## 🔮 Future Improvements
+## API Reference
 
-- [ ] Style the dashboard to match the login and signup cards
-- [ ] Add password confirmation and strength checking
-- [ ] Add "Show / Hide password" toggle
-- [ ] Add inline form validation and error messages
-- [ ] Add "Forgot password" flow
-- [ ] Connect to a backend API and database
-- [ ] Hash passwords and use token-based authentication
-- [ ] Add dark mode
+Base URL: `http://localhost:3000`
+
+| Method | Endpoint             | Purpose                   |
+|--------|----------------------|---------------------------|
+| GET    | `/users`             | List all users            |
+| GET    | `/users?email=<e>`   | Check if an email exists  |
+| POST   | `/users`             | Create a new user         |
+| GET    | `/todos`             | List all todos            |
+| POST   | `/todos`             | Create a todo             |
+| PATCH  | `/todos/:id`         | Update a todo's text      |
+| DELETE | `/todos/:id`         | Delete a todo             |
 
 ---
 
-## 🤝 Contributing
+## Troubleshooting
 
-Contributions are welcome!
+| Problem | Fix |
+|---------|-----|
+| `Could not reach the server` or fetch errors | Make sure JSON Server is running on port 3000. |
+| `Cannot read properties of null (reading 'name')` on dashboard | You are not logged in. Go to `index.html` and log in first. |
+| Port 3000 already in use | Run `npx json-server db.json --port 3001` and update the API URLs in both JS files. |
+| Changes not saving | Check the terminal running JSON Server for errors, and make sure `db.json` is valid JSON. |
+
+---
+
+## Known Limitations
+
+This is a learning project and is **not production-ready**:
+
+- Passwords are stored and compared in **plain text**. Real apps must hash passwords (e.g. bcrypt) on a real backend.
+- Authentication relies only on `localStorage`; there are no tokens or server-side sessions.
+- `dashboard.js` does not redirect unauthenticated visitors away from the dashboard.
+- Todo text is inserted with `innerHTML`, which is vulnerable to XSS. Prefer `textContent`.
+- The "No todos found" message is not hidden again after the first todo is added.
+- Todo text containing quote characters can break the inline `onclick` handlers.
+- The checkbox and completed-style CSS exist, but completion toggling is not implemented yet.
+
+---
+
+## Future Improvements
+
+- [ ] Redirect to login if the user is not authenticated
+- [ ] Mark todos as completed (checkbox with strike-through)
+- [ ] Hash passwords and use a real backend (Node.js/Express + database)
+- [ ] Use JWT-based authentication
+- [ ] Replace `prompt()` with an inline edit field or modal
+- [ ] Add form validation (email format, password strength)
+- [ ] Apply the existing CSS classes to dynamically rendered todos
+- [ ] Add filters (All / Active / Completed)
+
+---
+
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m "Add your feature"`
-4. Push to the branch: `git push origin feature/your-feature`
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes: `git commit -m "Add my feature"`
+4. Push the branch: `git push origin feature/my-feature`
 5. Open a Pull Request
 
 ---
 
-## 📜 License
+## License
 
-This project is licensed under the **MIT License**. You are free to use, modify, and distribute it.
+This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## 👤 Author
+## Author
 
-**Your Name**
+Made by **<Your Name>**
 GitHub: [@your-username](https://github.com/your-username)
-
-⭐ If you found this project helpful, consider giving it a star!
