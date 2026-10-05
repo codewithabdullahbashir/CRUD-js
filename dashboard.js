@@ -9,17 +9,9 @@ const empty = document.getElementById("empty-todos");
 document.getElementById("user-name").innerText = user.name;
 
 function getTodos(callback) {
-  const request = new XMLHttpRequest();
-
-  request.open("GET", TodoAPI);
-
-  request.onload = function () {
-    const todos = JSON.parse(request.responseText);
-
-    callback(todos);
-  };
-
-  request.send();
+  fetch(TodoAPI)
+    .then((response) => response.json())
+    .then((todos) => callback(todos));
 }
 
 function loadTodos() {
@@ -65,24 +57,22 @@ function addTodo() {
     return;
   }
 
-  const request = new XMLHttpRequest();
+  fetch(TodoAPI, {
+    method: "POST",
 
-  request.open("POST", TodoAPI);
+    headers: {
+      "Content-Type": "application/json",
+    },
 
-  request.setRequestHeader("Content-Type", "application/json");
-
-  request.onload = function () {
-    todoInput.value = "";
-
-    loadTodos();
-  };
-
-  request.send(
-    JSON.stringify({
+    body: JSON.stringify({
       userId: user.id,
       text: text,
     }),
-  );
+  }).then(function () {
+    todoInput.value = "";
+
+    loadTodos();
+  });
 }
 
 function editTodo(id, oldText) {
@@ -92,32 +82,26 @@ function editTodo(id, oldText) {
     return;
   }
 
-  const request = new XMLHttpRequest();
+  fetch(`${TodoAPI}/${id}`, {
+    method: "PATCH",
 
-  request.open("PATCH", `${TodoAPI}/${id}`);
+    headers: {
+      "Content-Type": "application/json",
+    },
 
-  request.setRequestHeader("Content-Type", "application/json");
-
-  request.onload = function () {
-    loadTodos();
-  };
-
-  request.send(
-    JSON.stringify({
+    body: JSON.stringify({
       text: newText,
     }),
-  );
+  }).then(function () {
+    loadTodos();
+  });
 }
 function deleteTodo(id) {
-  const request = new XMLHttpRequest();
-
-  request.open("DELETE", `${TodoAPI}/${id}`);
-
-  request.onload = function () {
+  fetch(`${TodoAPI}/${id}`, {
+    method: "DELETE",
+  }).then(function () {
     loadTodos();
-  };
-
-  request.send();
+  });
 }
 
 function logout() {
