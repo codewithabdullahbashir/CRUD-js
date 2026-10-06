@@ -38,7 +38,7 @@ async function signup(event) {
 
     window.location.href = "dashboard.html";
   } catch (err) {
-    alert.error(err);
+    console.error(err);
     alert("Could not reach the server");
   }
 }

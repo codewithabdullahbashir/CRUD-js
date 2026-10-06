@@ -11,6 +11,12 @@
       "email": "abd87@gmail.com",
       "password": "1234567890",
       "id": "74_63-KmbU0"
+    },
+    {
+      "name": "asdf",
+      "email": "asdfggh@gmail.com",
+      "password": "1234567890",
+      "id": "V9j4roMml2E"
     }
   ],
   "todos": [
@@ -38,6 +44,26 @@
       "userId": "74_63-KmbU0",
       "text": "add1",
       "id": "AcYMEhr_bLo"
+    },
+    {
+      "userId": "V9j4roMml2E",
+      "text": "jjjj",
+      "id": "b2d_E9fzRJc"
+    },
+    {
+      "userId": "V9j4roMml2E",
+      "text": "kkkkk",
+      "id": "lOGSYkR1vcU"
+    },
+    {
+      "userId": "V9j4roMml2E",
+      "text": "kkkkk",
+      "id": "N1_JSUcipo0"
+    },
+    {
+      "userId": "V9j4roMml2E",
+      "text": "kkkkkkkkkkkk",
+      "id": "mT2wK3e9ZCM"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

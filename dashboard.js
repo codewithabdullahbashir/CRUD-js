@@ -9,38 +9,39 @@ const empty = document.getElementById("empty-todos");
 document.getElementById("user-name").innerText = user.name;
 
 function getTodos(callback) {
-  const request = new XMLHttpRequest();
-
-  request.open("GET", TodoAPI);
-
-  request.onload = function () {
-    const todos = JSON.parse(request.responseText);
-
-    callback(todos);
-  };
-
-  request.send();
+  return new Promise((resolve, reject) => {
+    fetch(TodoAPI)
+      .then((responce) => {
+        return responce.json();
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .then((error) => {
+        reject(error);
+      });
+  });
 }
 
 function loadTodos() {
-  getTodos(function (todos) {
-    const userTodo = todos.filter(function (todo) {
-      return todo.userId === user.id;
-    });
+  getTodos()
+    .then((todos) => {
+      const userTodo = todos.filter(function (todo) {
+        return todo.userId === user.id;
+      });
+      todoContainer.innerHTML = "";
 
-    todoContainer.innerHTML = "";
+      if (userTodo.length === 0) {
+        empty.style.display = "block";
+        return;
+      }
 
-    if (userTodo.length === 0) {
-      empty.style.display = "block";
-      return;
-    }
+      empty.style.display = "none";
 
-    empty.style.display = "none";
+      for (let todo of userTodo) {
+        const div = document.createElement("div");
 
-    for (let todo of userTodo) {
-      const div = document.createElement("div");
-
-      div.innerHTML = `
+        div.innerHTML = `
         <span>${todo.text}</span>
 
         <button onclick="editTodo('${todo.id}', '${todo.text}')">
@@ -52,11 +53,36 @@ function loadTodos() {
         </button>
       `;
 
-      todoContainer.appendChild(div);
-    }
-  });
+        todoContainer.appendChild(div);
+      }
+    })
+    .catch((error) => {
+      alert(error);
+    });
 }
 
+function addTodoCall(todoList) {
+  return new Promise((resolve, reject) => {
+    fetch(TodoAPI, {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify(todoList),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
 function addTodo() {
   const text = todoInput.value.trim();
 
@@ -65,24 +91,39 @@ function addTodo() {
     return;
   }
 
-  const request = new XMLHttpRequest();
+  addTodoCall({ userId: user.id, text: text })
+    .then(function () {
+      todoInput.value = "";
+      loadTodos();
+    })
+    .catch((error) => {
+      alert(error);
+    });
+}
 
-  request.open("POST", TodoAPI);
+function updateTodoApiCall(id, newText) {
+  return new Promise((resolve, reject) => {
+    fetch(`${TodoAPI}/${id}`, {
+      method: "PATCH",
 
-  request.setRequestHeader("Content-Type", "application/json");
+      headers: {
+        "Content-Type": "application/json",
+      },
 
-  request.onload = function () {
-    todoInput.value = "";
-
-    loadTodos();
-  };
-
-  request.send(
-    JSON.stringify({
-      userId: user.id,
-      text: text,
-    }),
-  );
+      body: JSON.stringify({
+        text: newText,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
 }
 
 function editTodo(id, oldText) {
@@ -92,32 +133,28 @@ function editTodo(id, oldText) {
     return;
   }
 
-  const request = new XMLHttpRequest();
-
-  request.open("PATCH", `${TodoAPI}/${id}`);
-
-  request.setRequestHeader("Content-Type", "application/json");
-
-  request.onload = function () {
-    loadTodos();
-  };
-
-  request.send(
-    JSON.stringify({
-      text: newText,
-    }),
-  );
+  updateTodoApiCall(id, newText)
+    .then(function () {
+      loadTodos();
+    })
+    .catch((error) => console.error("Error updating todo:", error));
 }
+function deleteTodoApiCall(id) {
+  return new Promise((resolve, reject) => {
+    fetch(`${TodoAPI}/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => resolve(response))
+      .catch((error) => reject(error));
+  });
+}
+
 function deleteTodo(id) {
-  const request = new XMLHttpRequest();
-
-  request.open("DELETE", `${TodoAPI}/${id}`);
-
-  request.onload = function () {
-    loadTodos();
-  };
-
-  request.send();
+  deleteTodoApiCall(id)
+    .then(function () {
+      loadTodos();
+    })
+    .catch((error) => console.error("Error deleting todo:", error));
 }
 
 function logout() {
