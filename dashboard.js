@@ -8,52 +8,79 @@ const empty = document.getElementById("empty-todos");
 
 document.getElementById("user-name").innerText = user.name;
 
-function getTodos(callback) {
-  const request = new XMLHttpRequest();
-
-  request.open("GET", TodoAPI);
-
-  request.onload = function () {
-    const todos = JSON.parse(request.responseText);
-
-    callback(todos);
-  };
-
-  request.send();
+function getTodos() {
+  return new Promise((resolve, reject) => {
+    fetch(TodoAPI)
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
 }
 
 function loadTodos() {
-  getTodos(function (todos) {
-    const userTodo = todos.filter(function (todo) {
-      return todo.userId === user.id;
+  getTodos()
+    .then((todos) => {
+      const userTodo = todos.filter((todo) => {
+        return todo.userId === user.id;
+      });
+
+      todoContainer.innerHTML = "";
+
+      if (userTodo.length === 0) {
+        empty.style.display = "block";
+        return;
+      }
+
+      empty.style.display = "none";
+
+      for (let todo of userTodo) {
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+          <span>${todo.text}</span>
+
+          <button onclick="editTodo('${todo.id}', '${todo.text}')">
+            Update
+          </button>
+
+          <button onclick="deleteTodo('${todo.id}')">
+            Delete
+          </button>
+        `;
+
+        todoContainer.appendChild(div);
+      }
+    })
+    .catch((error) => {
+      console.error("Error loading todos:", error);
+      alert(error.message);
     });
+}
 
-    todoContainer.innerHTML = "";
-
-    if (userTodo.length === 0) {
-      empty.style.display = "block";
-      return;
-    }
-
-    empty.style.display = "none";
-
-    for (let todo of userTodo) {
-      const div = document.createElement("div");
-
-      div.innerHTML = `
-        <span>${todo.text}</span>
-
-        <button onclick="editTodo('${todo.id}', '${todo.text}')">
-          Update
-        </button>
-
-        <button onclick="deleteTodo('${todo.id}')">
-          Delete
-        </button>
-      `;
-
-      todoContainer.appendChild(div);
-    }
+function addTodoCall(todoList) {
+  return new Promise((resolve, reject) => {
+    fetch(TodoAPI, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(todoList),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
   });
 }
 
@@ -65,24 +92,41 @@ function addTodo() {
     return;
   }
 
-  const request = new XMLHttpRequest();
+  addTodoCall({
+    userId: user.id,
+    text: text,
+  })
+    .then(() => {
+      todoInput.value = "";
+      loadTodos();
+    })
+    .catch((error) => {
+      console.error("Error adding todo:", error);
+      alert(error.message);
+    });
+}
 
-  request.open("POST", TodoAPI);
-
-  request.setRequestHeader(" Content-Type", "application/json");
-
-  request.onload = function () {
-    todoInput.value = "";
-
-    loadTodos();
-  };
-
-  request.send(
-    JSON.stringify({
-      userId: user.id,
-      text: text,
-    }),
-  );
+function updateTodoApiCall(id, newText) {
+  return new Promise((resolve, reject) => {
+    fetch(`${TodoAPI}/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: newText,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
 }
 
 function editTodo(id, oldText) {
@@ -92,37 +136,58 @@ function editTodo(id, oldText) {
     return;
   }
 
-  const request = new XMLHttpRequest();
+  if (newText.trim() === "") {
+    alert("Todo cannot be empty");
+    return;
+  }
 
-  request.open("PATCH", `${TodoAPI}/${id}`);
-
-  request.setRequestHeader("Content-Type", "application/json");
-
-  request.onload = function () {
-    loadTodos();
-  };
-
-  request.send(
-    JSON.stringify({
-      text: newText,
-    }),
-  );
+  updateTodoApiCall(id, newText.trim())
+    .then(() => {
+      loadTodos();
+    })
+    .catch((error) => {
+      console.error("Error updating todo:", error);
+      alert(error.message);
+    });
 }
+
+function deleteTodoApiCall(id) {
+  return new Promise((resolve, reject) => {
+    fetch(`${TodoAPI}/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete todo");
+        }
+
+        resolve(response);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
 function deleteTodo(id) {
-  const request = new XMLHttpRequest();
+  const confirmDelete = confirm("Are you sure you want to delete this todo?");
 
-  request.open("DELETE", `${TodoAPI}/${id}`);
+  if (!confirmDelete) {
+    return;
+  }
 
-  request.onload = function () {
-    loadTodos();
-  };
-
-  request.send();
+  deleteTodoApiCall(id)
+    .then(() => {
+      loadTodos();
+    })
+    .catch((error) => {
+      console.error("Error deleting todo:", error);
+      alert(error.message);
+    });
 }
 
 function logout() {
   localStorage.removeItem("user");
-
   window.location.href = "index.html";
 }
 

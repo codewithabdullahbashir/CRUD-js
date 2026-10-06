@@ -11,6 +11,12 @@
       "email": "abd87@gmail.com",
       "password": "1234567890",
       "id": "74_63-KmbU0"
+    },
+    {
+      "name": "jjjjjj",
+      "email": "vvgaghs@gmail.com",
+      "password": "1234567890",
+      "id": "flN79InCM5A"
     }
   ],
   "todos": [
@@ -38,6 +44,16 @@
       "userId": "74_63-KmbU0",
       "text": "add1",
       "id": "AcYMEhr_bLo"
+    },
+    {
+      "userId": "flN79InCM5A",
+      "text": "jjjjj",
+      "id": "om0hnqrFWQ8"
+    },
+    {
+      "userId": "flN79InCM5A",
+      "text": "mmmm",
+      "id": "KBhy9SfmPlw"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
