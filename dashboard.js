@@ -69,7 +69,7 @@ function addTodo() {
 
   request.open("POST", TodoAPI);
 
-  request.setRequestHeader("Content-Type", "application/json");
+  request.setRequestHeader(" Content-Type", "application/json");
 
   request.onload = function () {
     todoInput.value = "";
